@@ -1,0 +1,19 @@
+{
+  "name": "aws-s3-bucket-and-google-maps-walkthrough",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "test:backend": "cd backend && npm test",
+    "test:frontend": "cd frontend && npm test",
+    "lint:backend": "cd backend && npm run lint",
+    "lint:frontend": "cd frontend && npm run lint"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "npm run test:backend && npm run lint:backend && npm run test:frontend && npm run lint:frontend"
+    }
+  },
+  "devDependencies": {
+    "husky": "^8.0.3"
+  }
+}
