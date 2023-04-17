@@ -11,7 +11,10 @@ module.exports = (sequelize, DataTypes) => {
 		{}
 	);
 	GovernmentIdVerification.associate = function (models) {
-		// associations can be defined here
+		GovernmentIdVerification.belongsTo(models.User, { foreignKey: "userId" });
+		GovernmentIdVerification.hasOne(models.UserVerification, {
+			foreignKey: "verificationMethodId",
+		});
 	};
 
 	return GovernmentIdVerification;

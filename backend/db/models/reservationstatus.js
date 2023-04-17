@@ -8,7 +8,7 @@ module.exports = (sequelize, DataTypes) => {
 		{}
 	);
 	ReservationStatus.associate = function (models) {
-		// associations can be defined here
+		ReservationStatus.belongsTo(models.Reservation, { foreignKey: "reservationStatusId" });
 	};
 
 	return ReservationStatus;

@@ -8,7 +8,13 @@ module.exports = (sequelize, DataTypes) => {
 		{}
 	);
 	Amenity.associate = function (models) {
-		// associations can be defined here
+		const AmenityColumnMapping = {
+			through: "SpotAmenity",
+			otherKey: "spotId",
+			foreignKey: "amenityId",
+			onDelete: "CASCADE",
+		};
+		Amenity.belongsToMany(models.Spot, AmenityColumnMapping);
 	};
 
 	return Amenity;

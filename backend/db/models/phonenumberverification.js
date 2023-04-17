@@ -10,7 +10,8 @@ module.exports = (sequelize, DataTypes) => {
 		{}
 	);
 	PhoneNumberVerification.associate = function (models) {
-		// associations can be defined here
+		PhoneNumberVerification.belongsTo(models.User, { foreignKey: "userId" });
+		PhoneNumberVerification.hasOne(models.UserVerification, { foreignKey: "verificationMethodId" });
 	};
 
 	return PhoneNumberVerification;

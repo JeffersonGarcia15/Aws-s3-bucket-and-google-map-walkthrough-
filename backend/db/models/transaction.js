@@ -5,7 +5,7 @@ module.exports = (sequelize, DataTypes) => {
 		{
 			reservationId: DataTypes.INTEGER,
 			transactionId: DataTypes.STRING,
-			amount: DataTypes.DECIMAL,
+			amount: DataTypes.DECIMAL(10, 2),
 			currency: DataTypes.STRING,
 			paymentStatus: DataTypes.STRING,
 			paymentTimeStamp: DataTypes.DATE,
@@ -13,7 +13,7 @@ module.exports = (sequelize, DataTypes) => {
 		{}
 	);
 	Transaction.associate = function (models) {
-		// associations can be defined here
+		Transaction.belongsTo(models.Reservation, { foreignKey: "reservationId" });
 	};
 
 	return Transaction;

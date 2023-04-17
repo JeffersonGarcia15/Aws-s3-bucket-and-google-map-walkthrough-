@@ -8,7 +8,7 @@ module.exports = (sequelize, DataTypes) => {
 		{}
 	);
 	Cancellation.associate = function (models) {
-		// associations can be defined here
+		Cancellation.belongsTo(models.Spot, { foreignKey: "cancellationPolicyId" });
 	};
 
 	return Cancellation;

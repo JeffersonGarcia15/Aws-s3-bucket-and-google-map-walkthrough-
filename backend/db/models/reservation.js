@@ -8,13 +8,16 @@ module.exports = (sequelize, DataTypes) => {
 			checkInDate: DataTypes.DATE,
 			checkOutDate: DataTypes.DATE,
 			numberOfGuests: DataTypes.INTEGER,
-			totalPrice: DataTypes.DECIMAL,
+			totalPrice: DataTypes.DECIMAL(10, 2),
 			reservationStatusId: DataTypes.INTEGER,
 		},
 		{}
 	);
 	Reservation.associate = function (models) {
-		// associations can be defined here
+		Reservation.belongsTo(models.User, { foreignKey: "guestId" });
+		Reservation.belongsTo(models.Spot, { foreignKey: "spotId" });
+		Reservation.hasOne(models.ReservationStatus, { foreignKey: "reservationStatusId" });
+		Reservation.hasOne(models.Transaction, { foreignKey: "reservationId" });
 	};
 
 	return Reservation;

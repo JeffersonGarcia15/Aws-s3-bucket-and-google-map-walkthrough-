@@ -9,7 +9,8 @@ module.exports = (sequelize, DataTypes) => {
 		{}
 	);
 	SpotHouseRule.associate = function (models) {
-		// associations can be defined here
+		SpotHouseRule.belongsTo(models.Spot, { foreignKey: "spotId" });
+		SpotHouseRule.belongsTo(models.HouseRule, { foreignKey: "houseRuleId" });
 	};
 
 	return SpotHouseRule;

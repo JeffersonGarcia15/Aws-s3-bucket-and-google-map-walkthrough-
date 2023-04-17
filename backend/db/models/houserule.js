@@ -8,7 +8,13 @@ module.exports = (sequelize, DataTypes) => {
 		{}
 	);
 	HouseRule.associate = function (models) {
-		// associations can be defined here
+		const houseRulesColumnMapping = {
+			through: "SpotHouseRule",
+			otherKey: "spotId",
+			foreignKey: "houseRuleId",
+			onDelete: "CASCADE",
+		};
+		HouseRule.belongsToMany(models.Spot, houseRulesColumnMapping);
 	};
 
 	return HouseRule;

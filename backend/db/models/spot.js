@@ -8,11 +8,11 @@ module.exports = (sequelize, DataTypes) => {
 			city: DataTypes.STRING,
 			state: DataTypes.STRING,
 			country: DataTypes.STRING,
-			lat: DataTypes.DECIMAL,
-			lng: DataTypes.DECIMAL,
+			lat: DataTypes.DECIMAL(9, 6),
+			lng: DataTypes.DECIMAL(9, 6),
 			name: DataTypes.STRING,
 			description: DataTypes.STRING,
-			price: DataTypes.DECIMAL,
+			price: DataTypes.DECIMAL(10, 2),
 			typeId: DataTypes.INTEGER,
 			numberOfBedrooms: DataTypes.INTEGER,
 			numberOfBathrooms: DataTypes.INTEGER,
@@ -25,7 +25,26 @@ module.exports = (sequelize, DataTypes) => {
 		{}
 	);
 	Spot.associate = function (models) {
-		// associations can be defined here
+		Spot.belongsTo(models.User, { foreignKey: "ownerId" });
+		Spot.hasMany(models.Favorites, { foreignKey: "spotId" });
+		const AmenityColumnMapping = {
+			through: "SpotAmenity",
+			otherKey: "amenityId",
+			foreignKey: "spotId",
+			onDelete: "CASCADE",
+		};
+		Spot.belongsToMany(models.Amenity, AmenityColumnMapping);
+		const houseRulesColumnMapping = {
+			through: "SpotHouseRule",
+			otherKey: "houseRuleId",
+			foreignKey: "spotId",
+			onDelete: "CASCADE",
+		};
+		Spot.belongsToMany(models.HouseRule, houseRulesColumnMapping);
+		Spot.hasMany(models.Reservation, { foreignKey: "spotId" });
+		Spot.hasMany(models.SpotImage, { foreignKey: "spotId" });
+		Spot.hasMany(models.Review, { foreignKey: "spotId" });
+		Spot.hasOne(models.Cancellation, { foreignKey: "cancellationPolicyId" });
 	};
 
 	return Spot;

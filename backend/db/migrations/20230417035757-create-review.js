@@ -1,24 +1,24 @@
 "use strict";
 module.exports = {
 	up: (queryInterface, Sequelize) => {
-		return queryInterface.createTable("UserVerifications", {
+		return queryInterface.createTable("Reviews", {
 			id: {
 				allowNull: false,
 				autoIncrement: true,
 				primaryKey: true,
 				type: Sequelize.INTEGER,
 			},
+			spotId: {
+				type: Sequelize.INTEGER,
+			},
 			userId: {
 				type: Sequelize.INTEGER,
 			},
-			isVerified: {
-				type: Sequelize.BOOLEAN,
+			message: {
+				type: Sequelize.TEXT,
 			},
-			verificationMethodId: {
+			rating: {
 				type: Sequelize.INTEGER,
-			},
-			verificationMethodType: {
-				type: Sequelize.STRING,
 			},
 			createdAt: {
 				allowNull: false,
@@ -31,6 +31,6 @@ module.exports = {
 		});
 	},
 	down: (queryInterface, Sequelize) => {
-		return queryInterface.dropTable("UserVerifications");
+		return queryInterface.dropTable("Reviews");
 	},
 };

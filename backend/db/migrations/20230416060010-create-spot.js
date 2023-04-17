@@ -24,10 +24,10 @@ module.exports = {
 				type: Sequelize.STRING,
 			},
 			lat: {
-				type: Sequelize.DECIMAL,
+				type: Sequelize.DECIMAL(9, 6),
 			},
 			lng: {
-				type: Sequelize.DECIMAL,
+				type: Sequelize.DECIMAL(9, 6),
 			},
 			name: {
 				type: Sequelize.STRING,
@@ -36,7 +36,7 @@ module.exports = {
 				type: Sequelize.STRING,
 			},
 			price: {
-				type: Sequelize.DECIMAL,
+				type: Sequelize.DECIMAL(10, 2),
 			},
 			typeId: {
 				type: Sequelize.INTEGER,
@@ -48,7 +48,7 @@ module.exports = {
 				type: Sequelize.INTEGER,
 			},
 			maxGuests: {
-				type: Sequelize.NUMBER,
+				type: Sequelize.INTEGER,
 			},
 			amenityId: {
 				type: Sequelize.INTEGER,

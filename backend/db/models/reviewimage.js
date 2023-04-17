@@ -9,7 +9,7 @@ module.exports = (sequelize, DataTypes) => {
 		{}
 	);
 	ReviewImage.associate = function (models) {
-		// associations can be defined here
+		ReviewImage.belongsTo(models.Review, { foreignKey: "reviewId" });
 	};
 
 	return ReviewImage;
