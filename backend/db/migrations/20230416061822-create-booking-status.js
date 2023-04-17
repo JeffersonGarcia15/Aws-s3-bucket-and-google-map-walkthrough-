@@ -1,7 +1,7 @@
 "use strict";
 module.exports = {
 	up: (queryInterface, Sequelize) => {
-		return queryInterface.createTable("BookingStatuses", {
+		return queryInterface.createTable("ReservationStatuses", {
 			id: {
 				allowNull: false,
 				autoIncrement: true,
@@ -22,6 +22,6 @@ module.exports = {
 		});
 	},
 	down: (queryInterface, Sequelize) => {
-		return queryInterface.dropTable("BookingStatuses");
+		return queryInterface.dropTable("ReservationStatuses");
 	},
 };

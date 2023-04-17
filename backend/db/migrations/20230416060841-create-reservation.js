@@ -14,7 +14,7 @@ module.exports = {
 			spotId: {
 				type: Sequelize.INTEGER,
 			},
-			checkIndate: {
+			checkInDate: {
 				type: Sequelize.DATE,
 			},
 			checkOutDate: {
@@ -26,7 +26,7 @@ module.exports = {
 			totalPrice: {
 				type: Sequelize.DECIMAL,
 			},
-			bookingStatusId: {
+			reservationStatusId: {
 				type: Sequelize.INTEGER,
 			},
 			createdAt: {

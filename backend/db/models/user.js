@@ -18,6 +18,23 @@ module.exports = (sequelize, DataTypes) => {
 					},
 				},
 			},
+			firstName: {
+				type: DataTypes.STRING,
+				allowNull: true,
+			},
+			lastName: {
+				type: DataTypes.STRING,
+				allowNull: true,
+			},
+			biography: {
+				type: DataTypes.TEXT,
+				allowNull: true,
+			},
+			profileImageUrl: {
+				type: DataTypes.STRING,
+				allowNull: true,
+				defaultValue: "https://universejf.s3.us-east-2.amazonaws.com/default-avatar.png",
+			},
 			email: {
 				type: DataTypes.STRING,
 				allowNull: false,
@@ -31,6 +48,10 @@ module.exports = (sequelize, DataTypes) => {
 				validate: {
 					len: [60, 60],
 				},
+			},
+			isSuperHost: {
+				type: DataTypes.BOOLEAN,
+				defaultValue: false,
 			},
 		},
 		{

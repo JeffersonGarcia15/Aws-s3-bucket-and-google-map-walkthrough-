@@ -14,7 +14,7 @@ module.exports = {
 			isVerified: {
 				type: Sequelize.BOOLEAN,
 			},
-			verificationMethhodId: {
+			verificationMethodId: {
 				type: Sequelize.INTEGER,
 			},
 			verificationDataId: {
