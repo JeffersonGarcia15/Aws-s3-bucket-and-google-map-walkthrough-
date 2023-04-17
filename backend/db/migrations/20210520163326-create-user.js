@@ -13,6 +13,27 @@ module.exports = {
 				allowNull: false,
 				unique: true,
 			},
+			firstName: {
+				type: Sequelize.STRING,
+				allowNull: true,
+			},
+			lastName: {
+				type: Sequelize.STRING,
+				allowNull: true,
+			},
+			biography: {
+				type: Sequelize.TEXT,
+				allowNull: true,
+			},
+			profileImageUrl: {
+				type: Sequelize.TEXT,
+				allowNull: true,
+				defaultValue: "https://universejf.s3.us-east-2.amazonaws.com/default-avatar.png",
+			},
+			isSuperHost: {
+				type: Sequelize.BOOLEAN,
+				defaultValue: false,
+			},
 			email: {
 				type: Sequelize.STRING(256),
 				allowNull: false,

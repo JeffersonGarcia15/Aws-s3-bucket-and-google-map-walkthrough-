@@ -18,6 +18,23 @@ module.exports = (sequelize, DataTypes) => {
 					},
 				},
 			},
+			firstName: {
+				type: DataTypes.STRING,
+				allowNull: true,
+			},
+			lastName: {
+				type: DataTypes.STRING,
+				allowNull: true,
+			},
+			biography: {
+				type: DataTypes.TEXT,
+				allowNull: true,
+			},
+			profileImageUrl: {
+				type: DataTypes.STRING,
+				allowNull: true,
+				defaultValue: "https://universejf.s3.us-east-2.amazonaws.com/default-avatar.png",
+			},
 			email: {
 				type: DataTypes.STRING,
 				allowNull: false,
@@ -31,6 +48,10 @@ module.exports = (sequelize, DataTypes) => {
 				validate: {
 					len: [60, 60],
 				},
+			},
+			isSuperHost: {
+				type: DataTypes.BOOLEAN,
+				defaultValue: false,
 			},
 		},
 		{
@@ -92,7 +113,15 @@ module.exports = (sequelize, DataTypes) => {
 	};
 
 	User.associate = function (models) {
-		// associations can be defined here
+		User.hasMany(models.Spot, { foreignKey: "ownerId" });
+		User.hasMany(models.Favorite, { foreignKey: "userId" });
+		User.hasOne(models.GovernmentIdVerification, { foreignKey: "userId" });
+		User.hasOne(models.PhoneNumberVerification, { foreignKey: "userId" });
+		User.hasOne(models.UserVerification, { foreignKey: "userId" });
+		User.hasMany(models.Message, { foreignKey: "senderId", as: "SentMessages" });
+		User.hasMany(models.Message, { foreignKey: "receiverId", as: "ReceivedMessages" });
+		User.hasMany(models.Reservation, { foreignKey: "guestId" });
+		User.hasMany(models.Review, { foreignKey: "userId" });
 	};
 
 	return User;
