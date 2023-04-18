@@ -1,0 +1,44 @@
+version: 2.1
+
+executors:
+  node-executor:
+    docker:
+      - image: circleci/node:14
+
+jobs:
+  test_backend:
+    executor: node-executor
+    working_directory: ~/project/backend
+    steps:
+      - checkout:
+          path: ~/project
+      - restore_cache:
+          key: backend-dependencies-{{ checksum "package-lock.json" }}
+      - run: npm ci
+      - save_cache:
+          key: backend-dependencies-{{ checksum "package-lock.json" }}
+          paths:
+            - node_modules
+      - run: npm test
+
+  test_frontend:
+    executor: node-executor
+    working_directory: ~/project/frontend
+    steps:
+      - checkout:
+          path: ~/project
+      - restore_cache:
+          key: frontend-dependencies-{{ checksum "package-lock.json" }}
+      - run: npm ci
+      - save_cache:
+          key: frontend-dependencies-{{ checksum "package-lock.json" }}
+          paths:
+            - node_modules
+      - run: npm test
+
+workflows:
+  version: 2
+  build_and_test:
+    jobs:
+      - test_backend
+      - test_frontend
