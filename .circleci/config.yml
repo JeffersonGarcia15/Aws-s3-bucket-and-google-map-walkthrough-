@@ -46,31 +46,35 @@ jobs:
           paths:
             - backend
 
-  test_backend:
-    docker:
-      - image: cimg/node:14.18
-        environment:
-          DB_USERNAME: $DB_USERNAME
-          DB_PASSWORD: $DB_PASSWORD
-          DB_DATABASE: $DB_DATABASE
-          DB_HOST: localhost
-          DB_DIALECT: postgres
-      - image: postgres:13
-        environment:
-          POSTGRES_USER: $DB_USERNAME
-          POSTGRES_PASSWORD: $DB_PASSWORD
-          POSTGRES_DB: $DB_DATABASE
-    steps:
-      - attach_workspace:
-          at: ~/project
-      - run:
-          name: Install PostgreSQL Client
-          command: sudo apt-get update && sudo apt-get install -y postgresql-client
-      - run:
-          name: Wait for PostgreSQL to start
-          command: |
-            sudo apt-get update && sudo apt-get install -y dockerize
-            dockerize -wait tcp://localhost:5432 -timeout 1m
+test_backend:
+  docker:
+    - image: cimg/node:14.18
+      environment:
+        DB_USERNAME: $DB_USERNAME
+        DB_PASSWORD: $DB_PASSWORD
+        DB_DATABASE: $DB_DATABASE
+        DB_HOST: localhost
+        DB_DIALECT: postgres
+    - image: postgres:13
+      environment:
+        POSTGRES_USER: $DB_USERNAME
+        POSTGRES_PASSWORD: $DB_PASSWORD
+        POSTGRES_DB: $DB_DATABASE
+  steps:
+    - attach_workspace:
+        at: ~/project
+    - run:
+        name: Install PostgreSQL Client
+        command: sudo apt-get update && sudo apt-get install -y postgresql-client
+    - run:
+        name: Install Dockerize
+        command: |
+          wget https://github.com/jwilder/dockerize/releases/download/v0.6.1/dockerize-linux-amd64-v0.6.1.tar.gz
+          sudo tar -C /usr/local/bin -xzvf dockerize-linux-amd64-v0.6.1.tar.gz
+          rm dockerize-linux-amd64-v0.6.1.tar.gz
+    - run:
+        name: Wait for PostgreSQL to start
+        command: dockerize -wait tcp://localhost:5432 -timeout 1m
       - run:
           name: Run Backend
           command: cd backend && npm run start
