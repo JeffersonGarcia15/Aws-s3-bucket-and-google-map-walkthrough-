@@ -2,7 +2,7 @@ version: 2.1
 
 orbs:
   node: circleci/node@4.1.0
-  postgres: circleci/postgres@1.0
+  postgres: onehq/postgres@1.1.0
 
 executors:
   node-executor:
@@ -115,13 +115,13 @@ jobs:
           command: sudo apt-get update && sudo apt-get install -y libnss3 libatk-bridge2.0-0
       - run: npx cypress run
 
-  workflows:
-    version: 2
-    build_and_test:
-      jobs:
-        - install_backend_dependencies
-        - test_backend:
-        requires:
-        - install_backend_dependencies
-        - test_frontend
-        - cypress_test
+workflows:
+  version: 2
+  build_and_test:
+    jobs:
+      - install_backend_dependencies
+      - test_backend:
+          requires:
+            - install_backend_dependencies
+      - test_frontend
+      - cypress_test
