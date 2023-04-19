@@ -41,7 +41,7 @@ jobs:
           DB_DATABASE: $DB_DATABASE
           DB_HOST: localhost
           DB_DIALECT: postgres
-      - image: circleci/postgres:13
+      - image: postgres:13
         environment:
           POSTGRES_USER: $DB_USERNAME
           POSTGRES_PASSWORD: $DB_PASSWORD

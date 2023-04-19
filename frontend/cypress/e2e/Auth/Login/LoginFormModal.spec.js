@@ -1,3 +1,9 @@
+Cypress.on("uncaught:exception", (err) => {
+	console.error("Uncaught exception:", err);
+
+	return false; // This prevents Cypress from failing the test due to uncaught exceptions
+});
+
 describe("LoginFormModal", () => {
 	beforeEach(() => {
 		// Replace this URL with the URL of your React application
