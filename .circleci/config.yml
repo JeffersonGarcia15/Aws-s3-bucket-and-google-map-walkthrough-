@@ -58,8 +58,8 @@ jobs:
       - run:
           name: Create DB role and DB
           command: |
-            psql -h localhost -U $DB_USERNAME -d postgres -c "CREATE ROLE $DB_USERNAME WITH LOGIN CREATEDB PASSWORD '$DB_PASSWORD';"
-            psql -h localhost -U $DB_USERNAME -d postgres -c "CREATE DATABASE $DB_DATABASE WITH OWNER $DB_USERNAME;"
+            psql -h localhost -U postgres -d postgres -c "CREATE ROLE $DB_USERNAME WITH LOGIN CREATEDB PASSWORD '$DB_PASSWORD';"
+            psql -h localhost -U postgres -d postgres -c "CREATE DATABASE $DB_DATABASE WITH OWNER $DB_USERNAME;"
       - run:
           name: Run Backend
           command: cd backend && npm run start
@@ -89,6 +89,8 @@ jobs:
   cypress_test:
     executor: node-executor
     working_directory: ~/project/frontend
+    environment:
+      CYPRESS_SUPPORT_FILE: false
     steps:
       - checkout:
           path: ~/project
@@ -113,6 +115,14 @@ jobs:
       - run:
           name: Install Cypress dependencies
           command: sudo apt-get update && sudo apt-get install -y libgtk-3-0 libgbm1 libasound2 libnss3 libatk-bridge2.0-0
+      - run:
+          name: Start frontend server
+          command: npm run start
+          working_directory: ~/project/frontend
+          background: true
+      - run:
+          name: Wait for frontend server to start
+          command: dockerize -wait tcp://localhost:3000 -timeout 1m
       - run: npx cypress run
 
 workflows:
