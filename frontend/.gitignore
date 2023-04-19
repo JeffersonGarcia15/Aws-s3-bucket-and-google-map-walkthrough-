@@ -2,7 +2,3 @@
 .env.local
 
 node_modules
-fixtures
-screenshots
-videos
-support
