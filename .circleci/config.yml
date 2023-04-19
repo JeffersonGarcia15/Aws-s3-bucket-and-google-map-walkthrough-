@@ -2,7 +2,6 @@ version: 2.1
 
 orbs:
   node: circleci/node@4.1.0
-  postgres: onehq/postgres@1.1.0
 
 executors:
   node-executor:
@@ -56,6 +55,13 @@ jobs:
           name: Wait for PostgreSQL to start
           command: dockerize -wait tcp://localhost:5432 -timeout 1m
       - run:
+          name: Setup PostgreSQL Database
+          command: |
+            sudo apt-get install -y postgresql
+            sudo -u postgres createuser --superuser circleci
+            sudo -u postgres createdb circleci
+            sudo -u postgres psql -U postgres -d postgres -c "ALTER USER circleci WITH PASSWORD 'circleci';"
+      - run:
           name: Create DB role and DB
           command: |
             psql -h localhost -U postgres -d postgres -c "CREATE ROLE $DB_USERNAME WITH LOGIN CREATEDB PASSWORD '$DB_PASSWORD';"
@@ -70,6 +76,9 @@ jobs:
       - run:
           name: Run Cypress Tests
           command: cd backend && npx cypress run
+      - run:
+          name: Run Backend Tests
+          command: cd backend && npm test
 
   test_frontend:
     executor: node-executor
