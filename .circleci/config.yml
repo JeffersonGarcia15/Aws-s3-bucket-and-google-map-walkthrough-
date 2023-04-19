@@ -73,9 +73,9 @@ jobs:
           name: Setup PostgreSQL Database
           command: |
             sudo apt-get install -y postgresql
-            sudo -u postgres createuser --superuser circleci
-            sudo -u postgres createdb circleci
-            sudo -u postgres psql -U postgres -d postgres -c "ALTER USER circleci WITH PASSWORD 'circleci';"
+            sudo -u postgres createuser --superuser $DB_USERNAME
+            sudo -u postgres createdb $DB_DATABASE
+            sudo -u postgres psql -U postgres -d postgres -c "ALTER USER $DB_USERNAME WITH PASSWORD '$DB_PASSWORD';"
       - run:
           name: Create DB role and DB
           command: |
