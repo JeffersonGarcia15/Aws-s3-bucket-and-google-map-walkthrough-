@@ -98,9 +98,9 @@ jobs:
           key: frontend-dependencies-{{ checksum "package-lock.json" }}
       - run: npm ci
       - save_cache:
-          key: frontend-dependencies-{{checksum "package-lock.json" }}
-      paths:
-          - node_modules
+          key: frontend-dependencies-{{ checksum "package-lock.json" }}
+          paths:
+            - node_modules
       - run:
           name: Install backend dependencies
           command: npm install
