@@ -20,6 +20,11 @@ jobs:
           path: ~/project
       - run: npm install
       - run:
+          name: Create DB role and DB
+          command: |
+            psql -h 127.0.0.1 -U postgres -c "CREATE ROLE $DB_USERNAME WITH LOGIN CREATEDB PASSWORD '$DB_PASSWORD';"
+            psql -h 127.0.0.1 -U postgres -c "CREATE DATABASE $DB_DATABASE WITH OWNER $DB_USERNAME;"
+      - run:
           name: Run migrations
           command: npx dotenv -e test.env sequelize db:migrate
       - run:
@@ -56,21 +61,17 @@ jobs:
           paths:
             - node_modules
       - run:
-          name: Install Cypress dependencies
-          command: sudo apt-get update && sudo apt-get install -y libnss3
+          name: Install backend dependencies
+          command: npm install
+          working_directory: ~/project/backend
       - run:
           name: Start backend server
           command: npm run start
           working_directory: ~/project/backend
           background: true
       - run:
-          name: Start frontend server
-          command: npm run start
-          working_directory: ~/project/frontend
-          background: true
-      - run:
-          name: Wait for servers to be ready
-          command: sleep 10
+          name: Install Cypress dependencies
+          command: sudo apt-get update && sudo apt-get install -y libnss3 libatk-bridge2.0-0
       - run: npx cypress run
 
 workflows:
