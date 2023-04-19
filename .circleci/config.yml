@@ -3,11 +3,11 @@ executors:
   node-postgres:
     docker:
       - image: circleci/node:14
-      - image: circleci/postgres:9.6
+      - image: postgres:13
         environment:
-          POSTGRES_USER: circleci
-          POSTGRES_DB: circleci
-          POSTGRES_PASSWORD: circleci
+          POSTGRES_USER: $DB_USERNAME
+          POSTGRES_DB: $DB_DATABASE
+          POSTGRES_PASSWORD: $DB_PASSWORD
 
 jobs:
   build:
@@ -68,19 +68,9 @@ jobs:
           command: sudo apt-get update && sudo apt-get install -y postgresql-client
       - run:
           name: Wait for PostgreSQL to start
-          command: dockerize -wait tcp://localhost:5432 -timeout 1m
-      - run:
-          name: Setup PostgreSQL Database
           command: |
-            sudo apt-get install -y postgresql
-            sudo -u postgres createuser --superuser $DB_USERNAME
-            sudo -u postgres createdb $DB_DATABASE
-            sudo -u postgres psql -U postgres -d postgres -c "ALTER USER $DB_USERNAME WITH PASSWORD '$DB_PASSWORD';"
-      - run:
-          name: Create DB role and DB
-          command: |
-            psql -h localhost -U postgres -d postgres -c "CREATE ROLE $DB_USERNAME WITH LOGIN CREATEDB PASSWORD '$DB_PASSWORD';"
-            psql -h localhost -U postgres -d postgres -c "CREATE DATABASE $DB_DATABASE WITH OWNER $DB_USERNAME;"
+            sudo apt-get update && sudo apt-get install -y dockerize
+            dockerize -wait tcp://localhost:5432 -timeout 1m
       - run:
           name: Run Backend
           command: cd backend && npm run start
