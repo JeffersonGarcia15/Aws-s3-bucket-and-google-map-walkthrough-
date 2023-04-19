@@ -16,10 +16,13 @@
     "*.{js,jsx}": "eslint --fix"
   },
   "devDependencies": {
-    "simple-git-hooks": "^2.7.1",
-    "lint-staged": "^13.2.1"
+    "lint-staged": "^13.2.1",
+    "simple-git-hooks": "^2.7.1"
   },
   "simple-git-hooks": {
     "pre-commit": "npm run test:all && npm run lint-staged"
+  },
+  "dependencies": {
+    "per-env": "^1.0.2"
   }
 }

@@ -1,10 +1,12 @@
 version: 2.1
 
-orbs:
-  node: circleci/node@4.7.0
+executors:
+  node-executor:
+    docker:
+      - image: circleci/node:14
 
 jobs:
-  build:
+  test_backend:
     docker:
       - image: circleci/node:14
       - image: circleci/postgres:13
@@ -12,35 +14,21 @@ jobs:
           POSTGRES_USER: $DB_USERNAME
           POSTGRES_DB: $DB_DATABASE
           POSTGRES_PASSWORD: $DB_PASSWORD
-    steps:
-      - checkout
-      - node/install-packages
-      - run:
-          name: Install additional dependencies
-          command: sudo apt-get update && sudo apt-get install -y libnss3
-      - run:
-          name: Install per-env
-          command: npm install per-env
-      - run:
-          name: Run tests
-          command: npm test
-      - run:
-          name: Run Cypress
-          command: npx cypress run
-
-  test_backend:
-    docker:
-      - image: circleci/node:14
     working_directory: ~/project/backend
     steps:
       - checkout:
           path: ~/project
       - run: npm install
+      - run:
+          name: Run migrations
+          command: npx dotenv -e test.env sequelize db:migrate
+      - run:
+          name: Seed data
+          command: npx dotenv -e test.env sequelize db:seed:all
       - run: npm test
 
   test_frontend:
-    docker:
-      - image: circleci/node:14
+    executor: node-executor
     working_directory: ~/project/frontend
     steps:
       - checkout:
@@ -55,8 +43,7 @@ jobs:
       - run: npm test
 
   cypress_test:
-    docker:
-      - image: circleci/node:14
+    executor: node-executor
     working_directory: ~/project/frontend
     steps:
       - checkout:
@@ -68,6 +55,9 @@ jobs:
           key: frontend-dependencies-{{ checksum "package-lock.json" }}
           paths:
             - node_modules
+      - run:
+          name: Install Cypress dependencies
+          command: sudo apt-get update && sudo apt-get install -y libnss3
       - run:
           name: Start backend server
           command: npm run start
