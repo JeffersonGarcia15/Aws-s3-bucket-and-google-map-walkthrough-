@@ -1,12 +1,10 @@
 version: 2.1
 
-executors:
-  node-executor:
-    docker:
-      - image: circleci/node:14
+orbs:
+  node: circleci/node@4.7.0
 
 jobs:
-    build:
+  build:
     docker:
       - image: circleci/node:14
       - image: circleci/postgres:13
@@ -31,7 +29,8 @@ jobs:
           command: npx cypress run
 
   test_backend:
-    executor: node-executor
+    docker:
+      - image: circleci/node:14
     working_directory: ~/project/backend
     steps:
       - checkout:
@@ -40,7 +39,8 @@ jobs:
       - run: npm test
 
   test_frontend:
-    executor: node-executor
+    docker:
+      - image: circleci/node:14
     working_directory: ~/project/frontend
     steps:
       - checkout:
@@ -55,7 +55,8 @@ jobs:
       - run: npm test
 
   cypress_test:
-    executor: node-executor
+    docker:
+      - image: circleci/node:14
     working_directory: ~/project/frontend
     steps:
       - checkout:
