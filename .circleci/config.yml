@@ -1,36 +1,75 @@
 version: 2.1
 
+orbs:
+  node: circleci/node@4.1.0
+  postgres: circleci/postgres@1.0
+
 executors:
   node-executor:
     docker:
       - image: circleci/node:14
 
 jobs:
-  test_backend:
-    docker:
-      - image: circleci/node:14
-      - image: circleci/postgres:13
-        environment:
-          POSTGRES_USER: $DB_USERNAME
-          POSTGRES_DB: $DB_DATABASE
-          POSTGRES_PASSWORD: $DB_PASSWORD
-    working_directory: ~/project/backend
+  install_backend_dependencies:
+    executor:
+      name: node/default
     steps:
       - checkout:
           path: ~/project
-      - run: npm install
+      - restore_cache:
+          keys:
+            - v1-dependencies-{{ checksum "backend/package-lock.json" }}
+            - v1-dependencies-
+      - run:
+          name: Install Backend Dependencies
+          command: cd backend && npm ci
+      - save_cache:
+          paths:
+            - backend/node_modules
+          key: v1-dependencies-{{ checksum "backend/package-lock.json" }}
+      - persist_to_workspace:
+          root: .
+          paths:
+            - backend
+
+  test_backend:
+    docker:
+      - image: circleci/node:14
+        environment:
+          DB_USERNAME: my_username
+          DB_PASSWORD: my_password
+          DB_DATABASE: my_database
+          DB_HOST: localhost
+          DB_DIALECT: postgres
+      - image: circleci/postgres:13
+        environment:
+          POSTGRES_USER: my_username
+          POSTGRES_PASSWORD: my_password
+          POSTGRES_DB: my_database
+    steps:
+      - attach_workspace:
+          at: ~/project
+      - run:
+          name: Install PostgreSQL Client
+          command: sudo apt-get update && sudo apt-get install -y postgresql-client
+      - run:
+          name: Wait for PostgreSQL to start
+          command: dockerize -wait tcp://localhost:5432 -timeout 1m
       - run:
           name: Create DB role and DB
           command: |
-            psql -h 127.0.0.1 -U postgres -c "CREATE ROLE $DB_USERNAME WITH LOGIN CREATEDB PASSWORD '$DB_PASSWORD';"
-            psql -h 127.0.0.1 -U postgres -c "CREATE DATABASE $DB_DATABASE WITH OWNER $DB_USERNAME;"
+            psql -h localhost -U my_username -c "CREATE ROLE $DB_USERNAME WITH LOGIN CREATEDB PASSWORD '$DB_PASSWORD';"
+            psql -h localhost -U my_username -c "CREATE DATABASE $DB_DATABASE WITH OWNER $DB_USERNAME;"
       - run:
-          name: Run migrations
-          command: npx dotenv -e test.env sequelize db:migrate
+          name: Run Backend
+          command: cd backend && npm run start
+          background: true
       - run:
-          name: Seed data
-          command: npx dotenv -e test.env sequelize db:seed:all
-      - run: npm test
+          name: Install Cypress Dependencies
+          command: sudo apt-get install -y libgtk-3-0 libgbm1 libasound2
+      - run:
+          name: Run Cypress Tests
+          command: cd backend && npx cypress run
 
   test_frontend:
     executor: node-executor
@@ -78,6 +117,9 @@ workflows:
   version: 2
   build_and_test:
     jobs:
-      - test_backend
+      - install_backend_dependencies
+      - test_backend:
+        requires:
+          - install_backend_dependencies
       - test_frontend
       - cypress_test
