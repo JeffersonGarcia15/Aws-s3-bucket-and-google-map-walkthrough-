@@ -2,7 +2,7 @@ version: 2.1
 executors:
   node-postgres:
     docker:
-      - image: circleci/node:14
+      - image: cimg/node:14
       - image: postgres:13
         environment:
           POSTGRES_USER: $DB_USERNAME
@@ -48,7 +48,7 @@ jobs:
 
   test_backend:
     docker:
-      - image: circleci/node:14
+      - image: cimg/node:14
         environment:
           DB_USERNAME: $DB_USERNAME
           DB_PASSWORD: $DB_PASSWORD
