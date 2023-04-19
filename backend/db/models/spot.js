@@ -26,7 +26,7 @@ module.exports = (sequelize, DataTypes) => {
 	);
 	Spot.associate = function (models) {
 		Spot.belongsTo(models.User, { foreignKey: "ownerId" });
-		Spot.hasMany(models.Favorites, { foreignKey: "spotId" });
+		Spot.hasMany(models.Favorite, { foreignKey: "spotId" });
 		const AmenityColumnMapping = {
 			through: "SpotAmenity",
 			otherKey: "amenityId",
