@@ -6,6 +6,30 @@ executors:
       - image: circleci/node:14
 
 jobs:
+    build:
+    docker:
+      - image: circleci/node:14
+      - image: circleci/postgres:13
+        environment:
+          POSTGRES_USER: $DB_USERNAME
+          POSTGRES_DB: $DB_DATABASE
+          POSTGRES_PASSWORD: $DB_PASSWORD
+    steps:
+      - checkout
+      - node/install-packages
+      - run:
+          name: Install additional dependencies
+          command: sudo apt-get update && sudo apt-get install -y libnss3
+      - run:
+          name: Install per-env
+          command: npm install per-env
+      - run:
+          name: Run tests
+          command: npm test
+      - run:
+          name: Run Cypress
+          command: npx cypress run
+
   test_backend:
     executor: node-executor
     working_directory: ~/project/backend
