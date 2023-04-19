@@ -1,14 +1,29 @@
 version: 2.1
-
-orbs:
-  node: circleci/node@4.1.0
-
 executors:
-  node-executor:
+  node-postgres:
     docker:
       - image: circleci/node:14
+      - image: circleci/postgres:9.6
+        environment:
+          POSTGRES_USER: circleci
+          POSTGRES_DB: circleci
+          POSTGRES_PASSWORD: circleci
 
 jobs:
+  build:
+    executor: node-postgres
+    steps:
+      - checkout
+      - run:
+          name: Install Dependencies
+          command: npm install
+      - run:
+          name: Run Migrations
+          command: npm run migrate
+      - run:
+          name: Run Tests
+          command: npm test
+          
   install_backend_dependencies:
     executor:
       name: node-executor
