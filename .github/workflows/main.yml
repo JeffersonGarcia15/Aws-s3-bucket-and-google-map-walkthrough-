@@ -38,7 +38,7 @@ jobs:
         working-directory: backend
         env:
           NODE_ENV: test
-          DATABASE_URL: postgres://airbnb_user_test:password@localhost:5432/airbnb_db_test
+          DATABASE_URL: postgres://airbnb_user_test:password@postgres:5432/airbnb_db_test
 
         run: npx dotenv-cli sequelize db:migrate
 
@@ -46,7 +46,7 @@ jobs:
         working-directory: backend
         env:
           NODE_ENV: test
-          DATABASE_URL: postgres://airbnb_user_test:password@localhost:5432/airbnb_db_test
+          DATABASE_URL: postgres://airbnb_user_test:password@postgres:5432/airbnb_db_test
 
         run: npx dotenv sequelize db:seed:all
 
@@ -54,6 +54,6 @@ jobs:
         working-directory: backend
         env:
           NODE_ENV: test
-          DATABASE_URL: postgres://airbnb_user_test:password@localhost:5432/airbnb_db_test
+          DATABASE_URL: postgres://airbnb_user_test:password@postgres:5432/airbnb_db_test
 
         run: npm test
