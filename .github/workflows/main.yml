@@ -43,8 +43,8 @@ jobs:
           POSTGRES_PASSWORD: password
           POSTGRES_DB: airbnb_db_test
         run: |
-          ../wait-for-postgres.sh postgres:5432
-          npx dotenv-cli sequelize db:migrate
+          ../wait-for-postgres.sh postgres 5432
+          npx dotenv sequelize db:migrate
 
       - name: Run seeders
         working-directory: backend
