@@ -2,9 +2,7 @@ name: Node.js CI
 
 on:
   push:
-    branches: [staging]
   pull_request:
-    branches: [staging]
 
 jobs:
   build:
@@ -21,28 +19,28 @@ jobs:
           - 5432:5432
 
     steps:
-      - name: Check out repository
-        uses: actions/checkout@v2
+    - name: Check out repository
+      uses: actions/checkout@v2
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v2
-        with:
-          node-version: 14
+    - name: Set up Node.js
+      uses: actions/setup-node@v2
+      with:
+        node-version: 14
 
-      - name: Install dependencies
-        run: npm ci
+    - name: Install dependencies
+      run: npm install
 
-      - name: Run migrations
-        env:
-          DATABASE_URL: ${{ secrets.DATABASE_URL }}
-        run: npx sequelize-cli db:migrate
+    - name: Run migrations
+      env:
+        DATABASE_URL: ${{ secrets.DATABASE_URL }}
+      run: npx sequelize-cli db:migrate
 
-      - name: Run seeders
-        env:
-          DATABASE_URL: ${{ secrets.DATABASE_URL }}
-        run: npx sequelize-cli db:seed:all
+    - name: Run seeders
+      env:
+        DATABASE_URL: ${{ secrets.DATABASE_URL }}
+      run: npx sequelize-cli db:seed:all
 
-      - name: Run tests
-        env:
-          DATABASE_URL: ${{ secrets.DATABASE_URL }}
-        run: npm test
+    - name: Run backend tests
+      env:
+        DATABASE_URL: ${{ secrets.DATABASE_URL }}
+      run: npm test
