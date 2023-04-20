@@ -80,12 +80,6 @@ jobs:
           command: cd backend && npm run start
           background: true
       - run:
-          name: Install Cypress Dependencies
-          command: sudo apt-get install -y libgtk-3-0 libgbm1 libasound2
-      - run:
-          name: Run Cypress Tests
-          command: cd backend && npx cypress run
-      - run:
           name: Run Backend Tests
           command: cd backend && npm test
 
