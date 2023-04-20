@@ -30,17 +30,24 @@ jobs:
     - name: Install dependencies
       run: npm install
 
+    - name: Install backend dependencies
+      working-directory: backend
+      run: npm install
+
     - name: Run migrations
+      working-directory: backend
       env:
         DATABASE_URL: ${{ secrets.DATABASE_URL }}
       run: npx sequelize-cli db:migrate
 
     - name: Run seeders
+      working-directory: backend
       env:
         DATABASE_URL: ${{ secrets.DATABASE_URL }}
       run: npx sequelize-cli db:seed:all
 
     - name: Run backend tests
+      working-directory: backend
       env:
         DATABASE_URL: ${{ secrets.DATABASE_URL }}
       run: npm test
