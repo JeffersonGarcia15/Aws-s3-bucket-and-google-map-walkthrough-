@@ -39,15 +39,18 @@ jobs:
         env:
           NODE_ENV: test
           DATABASE_URL: postgres://airbnb_user_test:password@postgres:5432/airbnb_db_test
-
-        run: npx dotenv sequelize db:migrate
+          POSTGRES_USER: airbnb_user_test
+          POSTGRES_PASSWORD: password
+          POSTGRES_DB: airbnb_db_test
+        run: |
+          ../wait-for-postgres.sh postgres:5432
+          npx dotenv-cli sequelize db:migrate
 
       - name: Run seeders
         working-directory: backend
         env:
           NODE_ENV: test
           DATABASE_URL: postgres://airbnb_user_test:password@postgres:5432/airbnb_db_test
-
         run: npx dotenv sequelize db:seed:all
 
       - name: Run backend tests
