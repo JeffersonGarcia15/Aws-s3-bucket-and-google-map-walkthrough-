@@ -43,7 +43,10 @@ jobs:
           POSTGRES_PASSWORD: password
           POSTGRES_DB: airbnb_db_test
         run: |
-          ../wait-for-postgres.sh postgres 5432
+          until pg_isready -h postgres -p 5432 -U airbnb_user_test -d airbnb_db_test; do
+            >&2 echo "Postgres is unavailable - sleeping"
+            sleep 1
+          done
           npx dotenv sequelize db:migrate
 
       - name: Run seeders
