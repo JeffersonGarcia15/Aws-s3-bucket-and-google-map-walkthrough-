@@ -44,11 +44,7 @@ jobs:
           POSTGRES_DB: airbnb_db_test
         run: |
           echo "Waiting for PostgreSQL to start..."
-          sleep 15
-          until pg_isready -h postgres -p 5432 -U airbnb_user_test -d airbnb_db_test; do
-            >&2 echo "Postgres is unavailable - sleeping"
-            sleep 1
-          done
+          ../wait-for-it.sh postgres:5432 --timeout=60 --strict -- echo "Postgres is up - running migrations"
           npx dotenv sequelize db:migrate
 
       - name: Run seeders
