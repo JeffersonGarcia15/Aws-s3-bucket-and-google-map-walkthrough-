@@ -40,7 +40,7 @@ jobs:
           NODE_ENV: test
           DATABASE_URL: postgres://airbnb_user_test:password@postgres:5432/airbnb_db_test
 
-        run: npx dotenv-cli sequelize db:migrate
+        run: npx dotenv sequelize db:migrate
 
       - name: Run seeders
         working-directory: backend
