@@ -1,4 +1,5 @@
 .env
 .env.local
+test.env
 
 node_modules

@@ -3,23 +3,26 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
+    "test:all": "npm run test:backend && npm run test:frontend",
+    "cypress:open": "npx cypress open",
+    "cypress:run": "npx cypress run",
     "test:backend": "cd backend && npm test",
-    "test:frontend": "cd frontend && npm test",
+    "test:frontend": "cd frontend && npm run test:frontend",
     "lint:backend": "cd backend && npm run lint",
     "lint:frontend": "cd frontend && npm run lint",
     "lint-staged": "lint-staged"
   },
-  "simple-git-hooks": {
-    "pre-commit": "npm run lint-staged"
-  },
   "lint-staged": {
-    "*.{js,jsx}": [
-      "eslint --fix",
-      "git add"
-    ]
+    "*.{js,jsx}": "eslint --fix"
   },
   "devDependencies": {
     "lint-staged": "^13.2.1",
-    "simple-git-hooks": "^2.8.1"
+    "simple-git-hooks": "^2.7.1"
+  },
+  "simple-git-hooks": {
+    "pre-commit": "npm run test:all && npm run lint-staged"
+  },
+  "dependencies": {
+    "per-env": "^1.0.2"
   }
 }
