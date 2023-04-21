@@ -4,7 +4,7 @@
 	"description": "",
 	"main": "index.js",
 	"scripts": {
-		"test": "true --passWithNoTests",
+		"test": "jest --config=./jest.config.js",
 		"sequelize": "sequelize",
 		"sequelize-cli": "sequelize-cli",
 		"start": "per-env",
@@ -20,7 +20,6 @@
 		"cookie-parser": "^1.4.5",
 		"cors": "^2.8.5",
 		"csurf": "^1.11.0",
-		"dotenv": "^9.0.2",
 		"eslint": "^8.38.0",
 		"eslint-config-codely": "^2.1.3",
 		"express": "^4.17.1",
@@ -36,9 +35,13 @@
 		"sequelize-cli": "^5.5.1"
 	},
 	"devDependencies": {
-		"dotenv-cli": "^4.0.0",
+		"dotenv": "^16.0.3",
+		"dotenv-cli": "^4.1.1",
 		"eslint-plugin-jsdoc": "^41.1.1",
+		"jest": "^29.5.0",
 		"lint-staged": "^13.2.1",
-		"nodemon": "^2.0.7"
+		"nodemon": "^2.0.7",
+		"sequelize-mock": "^0.10.2",
+		"supertest": "^6.3.3"
 	}
 }

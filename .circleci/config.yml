@@ -1,22 +1,90 @@
 version: 2.1
-
 executors:
-  node-executor:
+  node-postgres:
     docker:
-      - image: circleci/node:14
+      - image: cimg/node:14.18
+      - image: postgres:13
+        environment:
+          POSTGRES_USER: $DB_USERNAME
+          POSTGRES_DB: $DB_DATABASE
+          POSTGRES_PASSWORD: $DB_PASSWORD
 
 jobs:
-  test_backend:
-    executor: node-executor
-    working_directory: ~/project/backend
+  build:
+    executor: node-postgres
+    steps:
+      - checkout
+      - run:
+          name: Install Dependencies
+          command: npm install
+      - run:
+          name: Run Migrations
+          command: npm run migrate
+      - run:
+          name: Run Tests
+          command: npm test
+
+  install_backend_dependencies:
+    executor:
+      name: node-postgres
     steps:
       - checkout:
           path: ~/project
-      - run: npm install
-      - run: npm test
+      - restore_cache:
+          keys:
+            - v1-dependencies-{{ checksum "backend/package-lock.json" }}
+            - v1-dependencies-
+      - run:
+          name: Install Backend Dependencies
+          command: cd backend && npm install
+      - save_cache:
+          paths:
+            - backend/node_modules
+          key: v1-dependencies-{{ checksum "backend/package-lock.json" }}
+      - persist_to_workspace:
+          root: .
+          paths:
+            - backend
+
+  test_backend:
+    docker:
+      - image: cimg/node:14.18
+        environment:
+          DB_USERNAME: $DB_USERNAME
+          DB_PASSWORD: $DB_PASSWORD
+          DB_DATABASE: $DB_DATABASE
+          DB_HOST: localhost
+          DB_DIALECT: postgres
+      - image: postgres:13
+        environment:
+          POSTGRES_USER: $DB_USERNAME
+          POSTGRES_PASSWORD: $DB_PASSWORD
+          POSTGRES_DB: $DB_DATABASE
+    steps:
+      - attach_workspace:
+          at: ~/project
+      - run:
+          name: Install PostgreSQL Client
+          command: sudo apt-get update && sudo apt-get install -y postgresql-client
+      - run:
+          name: Install Dockerize
+          command: |
+            wget https://github.com/jwilder/dockerize/releases/download/v0.6.1/dockerize-linux-amd64-v0.6.1.tar.gz
+            sudo tar -C /usr/local/bin -xzvf dockerize-linux-amd64-v0.6.1.tar.gz
+            rm dockerize-linux-amd64-v0.6.1.tar.gz
+      - run:
+          name: Wait for PostgreSQL to start
+          command: dockerize -wait tcp://localhost:5432 -timeout 1m
+      - run:
+          name: Run Backend
+          command: cd backend && npm run start
+          background: true
+      - run:
+          name: Run Backend Tests
+          command: cd backend && npm test
 
   test_frontend:
-    executor: node-executor
+    executor: node-postgres
     working_directory: ~/project/frontend
     steps:
       - checkout:
@@ -30,9 +98,52 @@ jobs:
             - node_modules
       - run: npm test
 
+  cypress_test:
+    executor: node-postgres
+    working_directory: ~/project/frontend
+    environment:
+      CYPRESS_SUPPORT_FILE: false
+    steps:
+      - checkout:
+          path: ~/project
+      - attach_workspace:
+          at: ~/project
+      - restore_cache:
+          key: frontend-dependencies-{{ checksum "package-lock.json" }}
+      - run: npm ci
+      - save_cache:
+          key: frontend-dependencies-{{ checksum "package-lock.json" }}
+          paths:
+            - node_modules
+      - run:
+          name: Install backend dependencies
+          command: npm install
+          working_directory: ~/project/backend
+      - run:
+          name: Start backend server
+          command: npm run start
+          working_directory: ~/project/backend
+          background: true
+      - run:
+          name: Install Cypress dependencies
+          command: sudo apt-get update && sudo apt-get install -y libgtk-3-0 libgbm1 libasound2 libnss3 libatk-bridge2.0-0
+      - run:
+          name: Start frontend server
+          command: npm run start
+          working_directory: ~/project/frontend
+          background: true
+      - run:
+          name: Wait for frontend server to start
+          command: dockerize -wait tcp://localhost:3000 -timeout 1m
+      - run: npx cypress run
+
 workflows:
   version: 2
   build_and_test:
     jobs:
-      - test_backend
+      - install_backend_dependencies
+      - test_backend:
+          requires:
+            - install_backend_dependencies
       - test_frontend
+      - cypress_test
