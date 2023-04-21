@@ -1,3 +1,11 @@
+const dotenv = require("dotenv");
+
+if (process.env.NODE_ENV === "development") {
+	dotenv.config({ path: ".env.development.local" });
+} else {
+	dotenv.config();
+}
+
 const AWS = require("aws-sdk");
 // name of your bucket here
 const NAME_OF_BUCKET = process.env.NAME_OF_BUCKET || "";
@@ -38,7 +46,7 @@ const multiplePublicFileUpload = async (files) => {
 	);
 };
 
-// --------------------------- Prviate UPLOAD ------------------------
+// --------------------------- Private UPLOAD ------------------------
 
 const singlePrivateFileUpload = async (file) => {
 	const { originalname, buffer } = await file;
