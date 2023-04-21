@@ -1,6 +1,13 @@
 "use strict";
 const { Validator } = require("sequelize");
 const bcrypt = require("bcryptjs");
+const dotenv = require("dotenv");
+
+if (process.env.NODE_ENV === "development") {
+	dotenv.config({ path: ".env.development.local" });
+} else {
+	dotenv.config();
+}
 
 module.exports = (sequelize, DataTypes) => {
 	const User = sequelize.define(
@@ -33,7 +40,7 @@ module.exports = (sequelize, DataTypes) => {
 			profileImageUrl: {
 				type: DataTypes.STRING,
 				allowNull: true,
-				defaultValue: "https://universejf.s3.us-east-2.amazonaws.com/default-avatar.png",
+				defaultValue: process.env.DEFAULT_PROFILE_IMAGE_URL,
 			},
 			email: {
 				type: DataTypes.STRING,
