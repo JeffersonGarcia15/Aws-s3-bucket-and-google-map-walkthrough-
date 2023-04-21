@@ -1,4 +1,6 @@
 const dotenv = require("dotenv");
+const url = require("url");
+const path = require("path");
 
 if (process.env.NODE_ENV === "development") {
 	dotenv.config({ path: ".env.development.local" });
@@ -36,6 +38,25 @@ const singlePublicFileUpload = async (file) => {
 
 	// save the name of the file in your bucket as the key in your database to retrieve for later
 	return result.Location;
+};
+
+const extractKeyFromUrl = (fileUrl) => {
+	const parsedUrl = url.parse(fileUrl);
+	const key = path.basename(parsedUrl.pathname);
+
+	return key;
+};
+
+const singlePublicFileDelete = async (file) => {
+	const params = {
+		Bucket: NAME_OF_BUCKET,
+		Key: file,
+	};
+	try {
+		await s3.deleteObject(params).promise();
+	} catch (error) {
+		console.error(JSON.stringify(error));
+	}
 };
 
 const multiplePublicFileUpload = async (files) => {
@@ -103,5 +124,7 @@ module.exports = {
 	multiplePrivateFileUpload,
 	retrievePrivateFile,
 	singleMulterUpload,
+	singlePublicFileDelete,
+	extractKeyFromUrl,
 	multipleMulterUpload,
 };

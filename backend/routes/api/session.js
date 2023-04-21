@@ -7,6 +7,12 @@ const { handleValidationErrors } = require("../../utils/validation");
 
 const { setTokenCookie, restoreUser } = require("../../utils/auth");
 const { User } = require("../../db/models");
+const {
+	singleMulterUpload,
+	singlePublicFileUpload,
+	singlePublicFileDelete,
+	extractKeyFromUrl,
+} = require("../../awsS3");
 
 const validateLogin = [
 	check("credential")
@@ -60,6 +66,23 @@ router.get("/", restoreUser, (req, res) => {
 	}
 
 	return res.json({});
+});
+
+router.put("/update/:id", singleMulterUpload("image"), async (req, res) => {
+	const id = parseInt(req.params.id, 10);
+	const user = await User.findByPk(id);
+	let profileImageUrl;
+	if (req.file) {
+		const keyToDelete = extractKeyFromUrl(user.profileImageUrl);
+		await singlePublicFileDelete(keyToDelete);
+		profileImageUrl = await singlePublicFileUpload(req.file);
+	} else {
+		profileImageUrl = user.profileImageUrl;
+	}
+
+	const updatedUser = await user.update({ ...req.body, profileImageUrl });
+
+	return res.json({ user: updatedUser });
 });
 
 module.exports = router;
