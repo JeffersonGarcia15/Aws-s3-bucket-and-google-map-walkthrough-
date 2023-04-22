@@ -28,15 +28,17 @@ app.use(
 	})
 );
 
-app.use(
-	csurf({
-		cookie: {
-			secure: isProduction,
-			sameSite: isProduction && "Lax",
-			httpOnly: true,
-		},
-	})
-);
+if (process.env.NODE_ENV !== "test") {
+	app.use(
+		csurf({
+			cookie: {
+				secure: isProduction,
+				sameSite: isProduction && "Lax",
+				httpOnly: true,
+			},
+		})
+	);
+}
 
 app.use(routes);
 
