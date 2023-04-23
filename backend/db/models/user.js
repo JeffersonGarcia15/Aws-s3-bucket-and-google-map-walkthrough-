@@ -28,19 +28,31 @@ module.exports = (sequelize, DataTypes) => {
 			firstName: {
 				type: DataTypes.STRING,
 				allowNull: true,
+				validate: {
+					notEmpty: true,
+				},
 			},
 			lastName: {
 				type: DataTypes.STRING,
 				allowNull: true,
+				validate: {
+					notEmpty: true,
+				},
 			},
 			biography: {
 				type: DataTypes.TEXT,
 				allowNull: true,
+				validate: {
+					notEmpty: true,
+				},
 			},
 			profileImageUrl: {
 				type: DataTypes.STRING,
 				allowNull: true,
 				defaultValue: process.env.DEFAULT_PROFILE_IMAGE_URL,
+				validate: {
+					notEmpty: true,
+				},
 			},
 			email: {
 				type: DataTypes.STRING,
