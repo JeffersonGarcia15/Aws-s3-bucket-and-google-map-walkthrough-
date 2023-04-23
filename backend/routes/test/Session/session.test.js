@@ -122,3 +122,30 @@ describe("PUT(Update user)", () => {
 		expect(data.user.profileImageUrl).not.toEqual(user.profileImageUrl);
 	});
 });
+
+describe("DELETE(delete a user)", () => {
+	test("deletes a user", async () => {
+		await User.create(newUser);
+		const foundUser = await User.findOne({ where: { email: newUser.email } });
+
+		expect(foundUser).not.toBeNull();
+		expect(foundUser.username).toEqual(newUser.username);
+
+		const deleteUser = await new Promise((resolve, reject) => {
+			request(app)
+				.delete(`/api/session/delete/${foundUser.id}`)
+				.expect(200)
+				.end(function (err, res) {
+					if (err) {
+						reject(res);
+					} else {
+						resolve(res);
+					}
+				});
+		});
+		const data = JSON.parse(deleteUser.res.text);
+		const recentlyDeleteUser = await User.findOne({ where: { email: newUser.email } });
+		expect(data.message).toEqual("Account successfully deleted");
+		expect(recentlyDeleteUser).toBeNull();
+	});
+});
