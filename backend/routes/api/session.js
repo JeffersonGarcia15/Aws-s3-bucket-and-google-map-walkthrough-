@@ -77,31 +77,39 @@ router.get("/", restoreUser, (req, res) => {
 });
 
 router.put("/update/:id", singleMulterUpload("image"), async (req, res) => {
-	const id = parseInt(req.params.id, 10);
-	const user = await User.findByPk(id);
-	let profileImageUrl;
-	if (req.file) {
-		const keyToDelete = extractKeyFromUrl(user.profileImageUrl);
-		await singlePublicFileDelete(keyToDelete);
-		profileImageUrl = await singlePublicFileUpload(req.file);
-	} else {
-		profileImageUrl = user.profileImageUrl;
+	try {
+		const id = parseInt(req.params.id, 10);
+		const user = await User.findByPk(id);
+		let profileImageUrl;
+		if (req.file) {
+			const keyToDelete = extractKeyFromUrl(user.profileImageUrl);
+			await singlePublicFileDelete(keyToDelete);
+			profileImageUrl = await singlePublicFileUpload(req.file);
+		} else {
+			profileImageUrl = user.profileImageUrl;
+		}
+
+		const updatedUser = await user.update({ ...req.body, profileImageUrl });
+
+		return res.json({ user: updatedUser });
+	} catch (error) {
+		res.status(500).json({ error: { message: error.message } });
 	}
-
-	const updatedUser = await user.update({ ...req.body, profileImageUrl });
-
-	return res.json({ user: updatedUser });
 });
 
 router.delete("/delete/:id", singleMulterUpload("image"), async (req, res) => {
-	const id = parseInt(req.params.id, 10);
-	const user = await User.findByPk(id);
-	if (process.env.DEFAULT_PROFILE_IMAGE_URL !== user.profileImageUrl) {
-		const keyToDelete = extractKeyFromUrl(user.profileImageUrl);
-		await singlePublicFileDelete(keyToDelete);
+	try {
+		const id = parseInt(req.params.id, 10);
+		const user = await User.findByPk(id);
+		if (process.env.DEFAULT_PROFILE_IMAGE_URL !== user.profileImageUrl) {
+			const keyToDelete = extractKeyFromUrl(user.profileImageUrl);
+			await singlePublicFileDelete(keyToDelete);
+		}
+		await user.destroy();
+		res.json({ message: "Account successfully deleted" });
+	} catch (error) {
+		res.status(500).json({ error: { message: error.message } });
 	}
-	await user.destroy();
-	res.json({ message: "Account successfully deleted" });
 });
 
 module.exports = router;
