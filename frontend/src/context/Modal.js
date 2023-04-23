@@ -15,11 +15,8 @@ export function ModalProvider({ children }) {
 		setModalContent(null); // clear the modal contents
 		// If callback function is truthy, call the callback function and reset it
 		// to null:
-		console.log("I AM HREREEHRERERE");
 		if (typeof onModalClose === "function") {
-			console.log("BUT NOTHERE");
 			setOnModalClose(null);
-			console.log("%c this is the onModalClose", "color: green;", onModalClose);
 			onModalClose();
 		}
 	};

@@ -1,6 +1,13 @@
 "use strict";
 const { Validator } = require("sequelize");
 const bcrypt = require("bcryptjs");
+const dotenv = require("dotenv");
+
+if (process.env.NODE_ENV === "development") {
+	dotenv.config({ path: ".env.development.local" });
+} else {
+	dotenv.config();
+}
 
 module.exports = (sequelize, DataTypes) => {
 	const User = sequelize.define(
@@ -21,19 +28,31 @@ module.exports = (sequelize, DataTypes) => {
 			firstName: {
 				type: DataTypes.STRING,
 				allowNull: true,
+				validate: {
+					notEmpty: true,
+				},
 			},
 			lastName: {
 				type: DataTypes.STRING,
 				allowNull: true,
+				validate: {
+					notEmpty: true,
+				},
 			},
 			biography: {
 				type: DataTypes.TEXT,
 				allowNull: true,
+				validate: {
+					notEmpty: true,
+				},
 			},
 			profileImageUrl: {
 				type: DataTypes.STRING,
 				allowNull: true,
-				defaultValue: "https://universejf.s3.us-east-2.amazonaws.com/default-avatar.png",
+				defaultValue: process.env.DEFAULT_PROFILE_IMAGE_URL,
+				validate: {
+					notEmpty: true,
+				},
 			},
 			email: {
 				type: DataTypes.STRING,
@@ -73,9 +92,9 @@ module.exports = (sequelize, DataTypes) => {
 
 	User.prototype.toSafeObject = function () {
 		// remember, this cannot be an arrow function
-		const { id, username, email } = this; // context will be the User instance
+		const { id, username, email, firstName, lastName, biography, profileImageUrl } = this; // context will be the User instance
 
-		return { id, username, email };
+		return { id, username, email, firstName, lastName, biography, profileImageUrl };
 	};
 
 	User.prototype.validatePassword = function (password) {
@@ -101,12 +120,14 @@ module.exports = (sequelize, DataTypes) => {
 		}
 	};
 
-	User.signup = async function ({ username, email, password }) {
+	User.signup = async function ({ username, email, password, firstName, lastName }) {
 		const hashedPassword = bcrypt.hashSync(password);
 		const user = await User.create({
 			username,
 			email,
 			hashedPassword,
+			firstName,
+			lastName,
 		});
 
 		return await User.scope("currentUser").findByPk(user.id);
