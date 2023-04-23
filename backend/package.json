@@ -4,7 +4,10 @@
 	"description": "",
 	"main": "index.js",
 	"scripts": {
-		"test": "jest --config=./jest.config.js",
+		"test": "npm run test-auth && npm run test-session",
+		"test-detect": "NODE_ENV=test jest --forceExit --verbose --runInBand --detectOpenHandles --config=./jest.config.js auth.test.js session.test.js",
+		"test-auth": "NODE_ENV=test jest --forceExit --runInBand --config=./jest.config.js --testPathPattern=auth.test.js",
+		"test-session": "NODE_ENV=test jest --forceExit --runInBand --config=./jest.config.js --testPathPattern=session.test.js",
 		"sequelize": "sequelize",
 		"sequelize-cli": "sequelize-cli",
 		"start": "per-env",

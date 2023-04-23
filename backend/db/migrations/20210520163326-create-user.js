@@ -1,4 +1,11 @@
 "use strict";
+const dotenv = require("dotenv");
+
+if (process.env.NODE_ENV === "development") {
+	dotenv.config({ path: ".env.development.local" });
+} else {
+	dotenv.config();
+}
 module.exports = {
 	up: (queryInterface, Sequelize) => {
 		return queryInterface.createTable("Users", {
@@ -28,7 +35,7 @@ module.exports = {
 			profileImageUrl: {
 				type: Sequelize.TEXT,
 				allowNull: true,
-				defaultValue: "https://universejf.s3.us-east-2.amazonaws.com/default-avatar.png",
+				defaultValue: process.env.DEFAULT_PROFILE_IMAGE_URL,
 			},
 			isSuperHost: {
 				type: Sequelize.BOOLEAN,
